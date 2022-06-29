@@ -25,6 +25,7 @@ namespace StackBasedCalculator.Constants
         public override IEnumerable<byte> ToBytes()
         {
             List<byte> iHateThisSoMuch = new List<byte>();
+            iHateThisSoMuch.Add(Tag);
             iHateThisSoMuch.AddRange(Length.ToBytes());
             iHateThisSoMuch.AddRange(Bytes);
             return iHateThisSoMuch;
