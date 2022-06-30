@@ -16,18 +16,18 @@ namespace StackBasedCalculator
         public ushort Minor_Version { get; private set; }
         public ushort Major_Version { get; private set; }
         public ushort Constant_Pool_Count { get; private set; }
-        Cp_Info[] constant_pool;
+        public Cp_Info[] Constant_pool;
         public ClassAccessFlags Access_Flags { get; private set; }
         public ushort This_Class { get; private set; }
         public ushort Super_Class { get; private set; }
         public ushort Interfaces_Count { get; private set; }
         public ushort[] Interfaces { get; private set; }
         public ushort Fields_Count { get; private set; }
-        Field_Info[] fields;
+        public Field_Info[] fields;
         public ushort Methods_Count { get; private set; }
-        Method_Info[] Methods;
+        public Method_Info[] Methods;
         public ushort Attributes_count { get; private set; }
-        Atrribute_Info[] attributes;
+        public Atrribute_Info[] attributes;
 
         public ClassLayout(byte[] machineCode)
         {
@@ -42,7 +42,7 @@ namespace StackBasedCalculator
             Minor_Version = view.U2();
             Major_Version = view.U2();
             Constant_Pool_Count = view.U2();
-            constant_pool = new Cp_Info[Constant_Pool_Count - 1];
+            Constant_pool = new Cp_Info[Constant_Pool_Count - 1];
             ParseCp(ref view);
             ;
             Access_Flags = (ClassAccessFlags)view.U2();
@@ -58,24 +58,45 @@ namespace StackBasedCalculator
             Methods = new Method_Info[Methods_Count];
             ParseMethods(ref view);
             Attributes_count = view.U2();
-            attributes = new Atrribute_Info[Attributes_count];
+            attributes = new Basic_Code_Attribute[Attributes_count];
             ParseAttributes(ref view);
 
-            ToByte();
-            ;
+            //Code_Attriubte_Info codeAttribute = new Code_Attriubte_Info(ref view); findCodeInMethod()
+
             if (view.Length != 0)
             {
                 throw new Exception(@"Barry later returns to express his gratitude to Vanessa, breaking the sacred rule that bees are not to communicate with humans. Barry and Vanessa develop a close friendship, bordering on attraction, and spend time together. When he and Vanessa are in the grocery store, Barry discovers that the humans have been stealing and eating the bees' honey for centuries. He decides to journey to Honey Farms, which supplies the grocery store with its honey. Incredulous at the poor treatment of the bees in the hive, including the use of bee smokers to incapacitate the colony, Barry decides to sue the human race to put an end to exploitation of the bees. Barry's mission attracts wide attention from bees and humans alike, with countless spectators attending the trial. Although Barry is up against tough defense attorney Layton T. Montgomery, the trial's first day goes well.That evening, Barry is having dinner with Vanessa when Ken shows up.Vanessa leaves the room, and Ken expresses to Barry that he hates the pair spending time together.When Barry leaves to use the restroom, Ken ambushes Barry and attempts to kill him, only for Vanessa to intervene and break up with Ken.The second day at the trial, Montgomery unleashes an unrepentant character assassination against the bees leading a deeply offended Adam to sting him. Montgomery immediately exaggerates the stinging to make himself seem the victim of an assault while simultaneously tarnishing Adam. Adam's actions jeopardize the bees' credibility and his life, though he recovers. The third day, Barry wins the trial by exposing the jury to the torturous treatment of bees, particularly use of the smoker, and prevents humans from stealing honey from bees ever again.Having lost the trial, Montgomery cryptically warns Barry that a negative shift of nature is imminent. As it turns out, Honex Industries stops honey production and puts every bee out of a job, including the vitally important Pollen Jocks, resulting in all the world's flowers beginning to die out without any pollination. Before long, the last remaining flowers on Earth are being stockpiled in Pasadena, California, intent for the last Tournament of Roses Parade. Barry and Vanessa travel to the parade and steal a float, which they load into a plane. They hope to bring the flowers to the bees so they can re-pollinate the world's last remaining flowers. When the plane's pilot and co-pilot are unconscious, Vanessa is forced to land the plane, with help from Barry and the bees from Barry's hive. Barry becomes a member of the Pollen Jocks, and they fly off to a flower patch.Armed with the pollen of the last flowers, Barry and the Pollen Jocks reverse the damage and save the world's flowers, restarting the bees' honey production.Later on, Barry runs a law firm at Vanessa's flower shop titled 'Insects at Law', which handles disputes between animals and humans. While selling flowers to customers, Vanessa offers certain brands of honey that are 'bee-approved'.");
             }
         }
-        public byte[] ToByte()
+        public byte[] ToByte(byte[] barryBBenson)
         {
             List<byte> b = new List<byte>();
             b.AddRange(Magic.ToBytes());
+            for (int i = 0; i < b.Count; i++)
+            {
+                if (b[i] != barryBBenson[i])
+                {
+                    throw new Exception("What do you call a bee that lives in America? A USB.");
+                }
+            }
             b.AddRange(Minor_Version.ToBytes());
+            for (int i = 0; i < b.Count; i++)
+            {
+                if (b[i] != barryBBenson[i])
+                {
+                    throw new Exception("What do you call a bee that lives in America? A USB.");
+                }
+            }
             b.AddRange(Major_Version.ToBytes());
+            for (int i = 0; i < b.Count; i++)
+            {
+                if (b[i] != barryBBenson[i])
+                {
+                    throw new Exception("What do you call a bee that lives in America? A USB.");
+                }
+            }
             b.AddRange(Constant_Pool_Count.ToBytes());
-            foreach (var item in constant_pool)
+            foreach (var item in Constant_pool)
             {
                 b.AddRange(item.ToBytes());
             }
@@ -132,9 +153,11 @@ namespace StackBasedCalculator
             }
         }
 
+        #region Parsing
+
         public void ParseCp(ref ReadOnlySpan<byte> span)
         {
-            for (int i = 0; i < constant_pool.Length; i++)
+            for (int i = 0; i < Constant_pool.Length; i++)
             {
                 byte tag = span.U1();
                 cpTags = (ConstantPoolTags)(tag);
@@ -142,60 +165,60 @@ namespace StackBasedCalculator
                 switch (cpTags)
                 {
                     case ConstantPoolTags.CONSTANT_Utf8:
-                        constant_pool[i] = new CONSTANT_Utf8(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_Utf8(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_Interger:
-                        constant_pool[i] = new CONSTANT_Interger(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_Interger(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_Float:
-                        constant_pool[i] = new CONSTANT_Float(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_Float(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_Long:
-                        constant_pool[i] = new CONSTANT_Long(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_Long(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_Double:
-                        constant_pool[i] = new CONSTANT_Double(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_Double(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_Class:
-                        constant_pool[i] = new CONSTANT_Class(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_Class(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_String:
-                        constant_pool[i] = new CONSTANT_String(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_String(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_Fieldref:
-                        constant_pool[i] = new CONSTANT_Fieldref(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_Fieldref(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_Methodref:
-                        constant_pool[i] = new CONSTANT_Methodref(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_Methodref(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_InterfaceMethodref:
-                        constant_pool[i] = new CONSTANT_InterfaceMethodref(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_InterfaceMethodref(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_NameAndType:
-                        constant_pool[i] = new CONSTANT_NameAndType(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_NameAndType(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_MethodHandle:
-                        constant_pool[i] = new CONSTANT_MethodHandle(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_MethodHandle(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_MethodType:
-                        constant_pool[i] = new CONSTANT_MethodType(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_MethodType(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     case ConstantPoolTags.CONSTANT_InvokeDynamic:
-                        constant_pool[i] = new CONSTANT_InvokeDynamic(ref span);
-                        constant_pool[i].Tag = tag;
+                        Constant_pool[i] = new CONSTANT_InvokeDynamic(ref span);
+                        Constant_pool[i].Tag = tag;
                         break;
                     default:
                         throw new Exception();
@@ -216,7 +239,7 @@ namespace StackBasedCalculator
         {
             for (int i = 0; i < fields.Length; i++)
             {
-                fields[i] = new Field_Info(ref span);
+                fields[i] = new Field_Info(ref span, Constant_pool);
             }
         }
 
@@ -224,7 +247,7 @@ namespace StackBasedCalculator
         {
             for (int i = 0; i < Methods.Length; i++)
             {
-                Methods[i] = new Method_Info(ref span);
+                Methods[i] = new Method_Info(ref span, Constant_pool);
             }
         }
 
@@ -232,21 +255,64 @@ namespace StackBasedCalculator
         {
             for (int i = 0; i < attributes.Length; i++)
             {
-                attributes[i] = new Atrribute_Info(ref span);
+                attributes[i] = Atrribute_Info.ParseGeneral(ref span, Constant_pool);
             }
         }
 
+        #endregion
+
         public void DebugPrint()
         {
+            Console.WriteLine();
             Console.WriteLine($"Magic: {Magic}");
             Console.WriteLine($"Minor Version: {Minor_Version}");
             Console.WriteLine($"Major Version: {Major_Version}");
             Console.WriteLine($"Constant Pool Count: {Constant_Pool_Count}");
             Console.WriteLine($"Constant Pool:");
-            for (int i = 0; i < constant_pool.Length; i++)
+            for (int i = 0; i < Constant_pool.Length; i++)
             {
-                Console.WriteLine($"Tag: {constant_pool[i].Tag}; Items: {constant_pool[i]}");
+                Console.WriteLine($"Tag: {Constant_pool[i].Tag}; Items: {Constant_pool[i]}");
             }
+            //ect, gotta finish this later
+        }
+
+        public Atrribute_Info FindCodeInMethod(Method_Info method)
+        {
+
+            foreach (var attributes in method.Attributes)
+            {
+                CONSTANT_Utf8 maybeCode = (CONSTANT_Utf8)(Constant_pool[attributes.Attribute_Name_Index - 1]);
+
+                if (maybeCode.Bytes.BytesToString() == "Code")
+                {
+                    return attributes;
+                }
+            }
+            return null;
+        }
+
+        public Method_Info FindMethod(string method)
+        {
+            List<Method_Info> publicStaticMethods = new List<Method_Info>();
+
+            foreach (var methods in Methods)
+            {
+                if (methods.Access_Flags == MethodAccessFlags.ACC_PUBLIC_STATIC)
+                {
+                    publicStaticMethods.Add(methods);
+                }
+            }
+
+            foreach (var methods in publicStaticMethods)
+            {
+                CONSTANT_Utf8 hi = (CONSTANT_Utf8)(Constant_pool[methods.Name_Index - 1]);
+
+                if (hi.Bytes.BytesToString() == method)
+                {
+                    return methods;
+                }
+            }
+            return null;
         }
     }
 }

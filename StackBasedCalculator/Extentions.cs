@@ -76,5 +76,10 @@ namespace StackBasedCalculator
 
             return NthShort;
         }
+
+        public static string BytesToString(this byte[] bytes)
+        {
+            return Encoding.UTF8.GetString(bytes);
+        }
     }
 }

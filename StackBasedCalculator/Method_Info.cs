@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackBasedCalculator.Constants;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using static StackBasedCalculator.Enums;
@@ -13,7 +14,7 @@ namespace StackBasedCalculator
         public ushort Attributes_Count { get; private set; }
         public Atrribute_Info[] Attributes {get; private set;}
 
-        public Method_Info(ref ReadOnlySpan<byte> view)
+        public Method_Info(ref ReadOnlySpan<byte> view, Cp_Info[] Constant_pool)
         {
             Access_Flags = (MethodAccessFlags)view.U2();
             Name_Index = view.U2();
@@ -23,7 +24,7 @@ namespace StackBasedCalculator
 
             for (int i = 0; i < Attributes.Length; i++)
             {
-                Attributes[i] = new Atrribute_Info(ref view);
+                Attributes[i] = Atrribute_Info.ParseGeneral(ref view, Constant_pool);
             }
         }
 

@@ -1,4 +1,8 @@
-﻿using System;
+﻿using StackBasedCalculator.Constants;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using static StackBasedCalculator.Enums;
 
 namespace StackBasedCalculator
 {
@@ -16,9 +20,13 @@ namespace StackBasedCalculator
 
             byte[] bytes = System.IO.File.ReadAllBytes(@"\\gmrdc1\Folder Redirection\Santiago.Gomez\Documents\VSCode\JAVA\JVMTesting\Program.class");
 
-            //byte[] bytes = System.IO.File.ReadAllBytes(@"C:\Users\Santiago.Gomez\source\repos\Santiago-G\BinaryConverter\BinaryConverter\Program.cs");
+            //bytes = System.IO.File.ReadAllBytes(@"C:\Users\Santiago.Gomez\source\repos\Santiago-G\BinaryConverter\BinaryConverter\Program.cs");
 
             ClassLayout classFile = new ClassLayout(bytes);
+
+            byte[] barryBBenson = classFile.ToByte(bytes);
+
+
 
             classFile.PrintInFormat();
 
@@ -33,7 +41,6 @@ namespace StackBasedCalculator
             //cal.Multiple();
             //cal.Push(2);
             //cal.Add();
-            //;
 
             //cal.Subtract();
 

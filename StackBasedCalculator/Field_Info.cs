@@ -13,7 +13,7 @@ namespace StackBasedCalculator
         public ushort Attributes_Count { get; private set; }
         public Atrribute_Info[] attributes { get; private set; }
 
-        public Field_Info(ref ReadOnlySpan<byte> view)
+        public Field_Info(ref ReadOnlySpan<byte> view, Cp_Info[] Constant_pool)
         {
             Access_Flags = (FieldAccessFlags)view.U2();
             Name_Index = view.U2();
@@ -23,7 +23,7 @@ namespace StackBasedCalculator
 
             for (int i = 0; i < attributes.Length; i++)
             {
-                attributes[i] = new Atrribute_Info(ref view);
+                attributes[i] = Atrribute_Info.ParseGeneral(ref view, Constant_pool);
             }
         }
 
