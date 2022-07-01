@@ -70,5 +70,25 @@ namespace StackBasedCalculator
 
             ACC_PUBLIC_STATIC = ACC_PUBLIC | ACC_STATIC
         }
+
+        public enum InstrucByteCode : byte
+        {
+            invokestatic = 0xb8,
+            iconst_0 = 0x03,
+            iconst_1 = 0x04,
+            iconst_2 = 0x05,
+            iconst_3 = 0x06,
+            iconst_4 = 0x07,
+            iconst_5 = 0x08,
+            istore_1 = 0x3c,
+            istore_2 = 0x3d,
+            istore_3 = 0x3e,
+            bipush = 0x10,
+            iload_0 = 0x1a,
+            iload_1 = 0x1b,
+            iload_2 = 0x1c,
+            iadd = 0x60,
+            eclipse = 0xb1
+        }
     }
 }

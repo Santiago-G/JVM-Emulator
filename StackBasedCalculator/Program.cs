@@ -14,24 +14,33 @@ namespace StackBasedCalculator
     //u1
     class Program
     {
+        public static Stack<uint> stack;
+        public static uint[] locals;
+
         static void Main(string[] args)
         {
-            Calculator cal = new Calculator();
-
             byte[] bytes = System.IO.File.ReadAllBytes(@"\\gmrdc1\Folder Redirection\Santiago.Gomez\Documents\VSCode\JAVA\JVMTesting\Program.class");
-
             //bytes = System.IO.File.ReadAllBytes(@"C:\Users\Santiago.Gomez\source\repos\Santiago-G\BinaryConverter\BinaryConverter\Program.cs");
+
+            stack = new Stack<uint>();
+            
 
             ClassLayout classFile = new ClassLayout(bytes);
 
+            Method_Info main = classFile.FindMain();
+            ;
+            //Method_Info otherFunction = classFile.FindMethod("main");
+            main.Execute(classFile.Constant_pool, classFile);
+
+
             byte[] barryBBenson = classFile.ToByte(bytes);
 
-
-
-            classFile.PrintInFormat();
+            classFile.PrintInFormat(bytes);
 
             //classFile.DebugPrint();
 
+            #region the stack based calculator
+            //Calculator stack = new Calculator();
             //cal.Push(2);
             //cal.Push(6);
             //cal.Divide();
@@ -43,9 +52,9 @@ namespace StackBasedCalculator
             //cal.Add();
 
             //cal.Subtract();
-
             //Console.WriteLine(cal.stacky.Peek());
             //cal.Pop();
+            #endregion
 
             Console.ReadKey();
         }

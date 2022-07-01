@@ -61,6 +61,8 @@ namespace StackBasedCalculator
             attributes = new Basic_Code_Attribute[Attributes_count];
             ParseAttributes(ref view);
 
+            ToByte(machineCode);
+
             //Code_Attriubte_Info codeAttribute = new Code_Attriubte_Info(ref view); findCodeInMethod()
 
             if (view.Length != 0)
@@ -72,35 +74,16 @@ namespace StackBasedCalculator
         {
             List<byte> b = new List<byte>();
             b.AddRange(Magic.ToBytes());
-            for (int i = 0; i < b.Count; i++)
-            {
-                if (b[i] != barryBBenson[i])
-                {
-                    throw new Exception("What do you call a bee that lives in America? A USB.");
-                }
-            }
             b.AddRange(Minor_Version.ToBytes());
-            for (int i = 0; i < b.Count; i++)
-            {
-                if (b[i] != barryBBenson[i])
-                {
-                    throw new Exception("What do you call a bee that lives in America? A USB.");
-                }
-            }
             b.AddRange(Major_Version.ToBytes());
-            for (int i = 0; i < b.Count; i++)
-            {
-                if (b[i] != barryBBenson[i])
-                {
-                    throw new Exception("What do you call a bee that lives in America? A USB.");
-                }
-            }
             b.AddRange(Constant_Pool_Count.ToBytes());
             foreach (var item in Constant_pool)
             {
                 b.AddRange(item.ToBytes());
             }
+            //
             b.AddRange(Access_Flags.ToBytes());
+            //
             b.AddRange(This_Class.ToBytes());
             b.AddRange(Super_Class.ToBytes());
             b.AddRange(Interfaces_Count.ToBytes());
@@ -130,9 +113,9 @@ namespace StackBasedCalculator
             return b.ToArray();
         }
 
-        public void PrintInFormat()
+        public void PrintInFormat(byte[] barryBBenson)
         {
-            byte[] bytes = ToByte();
+            byte[] bytes = ToByte(barryBBenson);
 
             Console.WriteLine("");
 
@@ -276,7 +259,7 @@ namespace StackBasedCalculator
             //ect, gotta finish this later
         }
 
-        public Atrribute_Info FindCodeInMethod(Method_Info method)
+        public Code_Attriubte_Info FindCodeInMethod(Method_Info method)
         {
 
             foreach (var attributes in method.Attributes)
@@ -285,13 +268,51 @@ namespace StackBasedCalculator
 
                 if (maybeCode.Bytes.BytesToString() == "Code")
                 {
-                    return attributes;
+                    return (Code_Attriubte_Info)attributes;
                 }
             }
             return null;
         }
 
-        public Method_Info FindMethod(string method)
+        public Method_Info FindMethod(string method, ushort descriptorIndex = 23000)
+        {
+            List<Method_Info> publicStaticMethods = new List<Method_Info>();
+
+            foreach (var methods in Methods)
+            {
+                if (methods.Access_Flags == MethodAccessFlags.ACC_PUBLIC_STATIC)
+                {
+                    publicStaticMethods.Add(methods);
+                }
+            }
+
+            foreach (var methods in publicStaticMethods)
+            {
+                ;
+                CONSTANT_Utf8 hi = (CONSTANT_Utf8)(Constant_pool[methods.Name_Index - 1]);
+
+                if (descriptorIndex == 23000)
+                {
+                    CONSTANT_Utf8 changes = (CONSTANT_Utf8)(Constant_pool[methods.Descriptor_Index - 1]);
+                    if (hi.Bytes.BytesToString() == method && changes.Bytes.BytesToString() != "([Ljava/lang/String;)V")
+                    {
+                        return methods;
+                    }
+                }
+                else
+                {
+                    CONSTANT_Utf8 changes = (CONSTANT_Utf8)(Constant_pool[descriptorIndex - 1]);
+                    if (hi.Bytes.BytesToString() == method && changes.Bytes.BytesToString() != "([Ljava/lang/String;)V")
+                    {
+                        return methods;
+                    }
+                }
+
+            }
+            return null;
+        }
+
+        public Method_Info FindMain()
         {
             List<Method_Info> publicStaticMethods = new List<Method_Info>();
 
@@ -307,7 +328,9 @@ namespace StackBasedCalculator
             {
                 CONSTANT_Utf8 hi = (CONSTANT_Utf8)(Constant_pool[methods.Name_Index - 1]);
 
-                if (hi.Bytes.BytesToString() == method)
+                CONSTANT_Utf8 changes = (CONSTANT_Utf8)(Constant_pool[methods.Descriptor_Index-1]);
+                ;
+                if (hi.Bytes.BytesToString() == "main" && changes.Bytes.BytesToString() == "([Ljava/lang/String;)V")
                 {
                     return methods;
                 }
